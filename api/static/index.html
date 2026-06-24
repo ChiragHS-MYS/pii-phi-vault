@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PII & PHI Secure Vault Dashboard</title>
+  <!-- Google Fonts Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- Main Layout -->
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>Vault.io</h1>
+          <span>PII & PHI Guard</span>
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-tab="tab-detect">
+          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <span>Detection Pass</span>
+        </button>
+        <button class="nav-item" data-tab="tab-mask">
+          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+          </svg>
+          <span>Vault Masking</span>
+        </button>
+        <button class="nav-item" data-tab="tab-demask">
+          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+          </svg>
+          <span>Demask & Restore</span>
+        </button>
+        <button class="nav-item" data-tab="tab-registry">
+          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+          </svg>
+          <span>Vault Registry</span>
+        </button>
+        <button class="nav-item" data-tab="tab-audit">
+          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span>Audit Logs</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="api-status">
+          <span class="status-indicator online" id="api-status-dot"></span>
+          <span id="api-status-text">Checking API Connection...</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-viewport">
+      
+      <!-- Top Header -->
+      <header class="main-header">
+        <div class="header-title">
+          <h2 id="view-title">Detection Pass</h2>
+          <p id="view-description">Analyze JSON/XML payloads to extract sensitive PII and PHI entities without modification.</p>
+        </div>
+        <div class="header-actions">
+          <label for="file-upload-input" class="btn btn-primary btn-sm" id="lbl-file-upload" style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 16px; height: 16px;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            <span>Upload File</span>
+          </label>
+          <input type="file" id="file-upload-input" style="display: none;" accept=".pdf,.json,.xml,.txt">
+          <button class="btn btn-secondary btn-sm" id="btn-load-json">Load Sample JSON</button>
+          <button class="btn btn-secondary btn-sm" id="btn-load-xml">Load Sample XML</button>
+        </div>
+      </header>
+
+      <!-- View Containers -->
+      <div class="view-content-wrapper">
+
+        <!-- VIEW 1: DETECTION PASS -->
+        <section id="tab-detect" class="view-panel active">
+          <div class="split-layout">
+            <!-- Left Pane: Input -->
+            <div class="editor-pane">
+              <div class="pane-header">
+                <h3>Source Payload</h3>
+                <div class="pane-badges">
+                  <span class="badge" id="detect-format-badge">Auto-detecting</span>
+                </div>
+              </div>
+              <div class="pane-body">
+                <textarea id="detect-input" class="code-textarea" placeholder="Paste your JSON or XML document here..."></textarea>
+              </div>
+              <div class="pane-footer">
+                <button class="btn btn-primary" id="btn-run-detect">
+                  <span>Analyze Payload</span>
+                  <div class="spinner hidden" id="detect-spinner"></div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Right Pane: Detection Results -->
+            <div class="results-pane">
+              <div class="pane-header">
+                <h3>Entities Discovered</h3>
+                <span class="results-count" id="detect-count-badge">0 items</span>
+              </div>
+              <div class="pane-body scroll-y" id="detect-results-container">
+                <div class="empty-state">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.125 2.25h3.75a.75.75 0 01.75.75v1.125c0 .414.336.75.75.75h4.125c.414 0 .75.336.75.75v12.75a.75.75 0 01-.75.75H3.875a.75.75 0 01-.75-.75V5.625c0-.414.336-.75.75-.75h4.125c.414 0 .75-.336.75-.75V3a.75.75 0 01.75-.75z" />
+                  </svg>
+                  <h4>No scan executed yet</h4>
+                  <p>Paste a payload on the left and click "Analyze Payload" to extract fields and scan for sensitive identifiers.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- VIEW 2: VAULT MASKING -->
+        <section id="tab-mask" class="view-panel">
+          <div class="split-layout">
+            <!-- Left Pane: Input -->
+            <div class="editor-pane">
+              <div class="pane-header">
+                <h3>Source Payload</h3>
+                <div class="pane-badges">
+                  <span class="badge" id="mask-format-badge">Auto-detecting</span>
+                </div>
+              </div>
+              <div class="pane-body">
+                <div class="input-field-group">
+                  <label for="mask-doc-id-input">Document ID (Optional - auto-generated if empty)</label>
+                  <div style="display: flex; gap: 10px;">
+                    <input type="text" id="mask-doc-id-input" placeholder="Enter custom ID or click generate..." autocomplete="off" style="flex-grow: 1;">
+                    <button class="btn btn-secondary" id="btn-generate-doc-id" type="button" style="height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 16px; height: 16px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7C4.547 9.547 4.5 10.768 4.5 12s.047 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.092-1.209.138-2.43.138-3.662z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10.5l3 3 3-3" />
+                      </svg>
+                      <span>Generate Random ID</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="textarea-wrapper" style="top: 90px;">
+                  <label for="mask-input">Source Payload</label>
+                  <textarea id="mask-input" class="code-textarea" placeholder="Paste your raw JSON/XML here..."></textarea>
+                </div>
+              </div>
+              <div class="pane-footer">
+                <button class="btn btn-primary" id="btn-run-mask">
+                  <span>Mask & Tokenize</span>
+                  <div class="spinner hidden" id="mask-spinner"></div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Right Pane: Output + Metadata -->
+            <div class="results-pane flex-col">
+              <div class="metadata-banner hidden" id="mask-meta-banner">
+                <div class="doc-id-wrapper">
+                  <label>Generated Document ID (Keep this safe to demask!)</label>
+                  <div class="doc-id-row">
+                    <code id="masked-doc-id-value">doc-xxxx-xxxx</code>
+                    <button class="btn btn-icon btn-copy" data-copy-target="masked-doc-id-value" title="Copy Document ID">
+                      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="stats-row">
+                  <div class="stat-card pii">
+                    <span class="stat-num" id="mask-stat-pii">0</span>
+                    <span class="stat-label">PII Masked</span>
+                  </div>
+                  <div class="stat-card phi">
+                    <span class="stat-num" id="mask-stat-phi">0</span>
+                    <span class="stat-label">PHI Masked</span>
+                  </div>
+                  <div class="stat-card total">
+                    <span class="stat-num" id="mask-stat-total">0</span>
+                    <span class="stat-label">Tokens Placed</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="editor-pane flex-grow">
+                <div class="pane-header">
+                  <h3>Masked Payload</h3>
+                  <button class="btn btn-secondary btn-sm btn-copy hidden" id="btn-copy-masked" data-copy-target="mask-output">Copy Output</button>
+                </div>
+                <div class="pane-body">
+                  <textarea id="mask-output" class="code-textarea readonly" readonly placeholder="Output masked payload will appear here..."></textarea>
+                </div>
+              </div>
+
+              <!-- Masked Entities Table Card -->
+              <div class="editor-pane hidden" id="mask-entities-card" style="max-height: 250px; display: flex; flex-direction: column;">
+                <div class="pane-header">
+                  <h3>Masked PII & PHI Entities</h3>
+                  <span class="badge" id="mask-entities-count-badge">0 items</span>
+                </div>
+                <div class="table-container" style="overflow-y: auto;">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Token</th>
+                        <th>Type</th>
+                        <th>Category</th>
+                        <th>Field Path</th>
+                        <th>Original Value</th>
+                      </tr>
+                    </thead>
+                    <tbody id="mask-entities-table-body">
+                      <!-- Dynamic entries -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- VIEW 3: DEMASK & RESTORE -->
+        <section id="tab-demask" class="view-panel">
+          <div class="split-layout">
+            <!-- Left Pane: Input -->
+            <div class="editor-pane">
+              <div class="pane-header">
+                <h3>Masked Payload</h3>
+                <div class="pane-badges">
+                  <span class="badge" id="demask-format-badge">Auto-detecting</span>
+                </div>
+              </div>
+              <div class="pane-body">
+                <div class="input-field-group">
+                  <label for="demask-doc-id-input">Document ID</label>
+                  <input type="text" id="demask-doc-id-input" placeholder="Paste the unique document_id..." autocomplete="off">
+                </div>
+                <div class="textarea-wrapper">
+                  <label for="demask-input">Tokenized Content</label>
+                  <textarea id="demask-input" class="code-textarea" placeholder="Paste your masked JSON/XML payload..."></textarea>
+                </div>
+              </div>
+              <div class="pane-footer">
+                <button class="btn btn-success" id="btn-run-demask">
+                  <span>Demask & Restore</span>
+                  <div class="spinner hidden" id="demask-spinner"></div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Right Pane: Restored Output -->
+            <div class="results-pane flex-col">
+              <div class="metadata-banner hidden" id="demask-meta-banner">
+                <div class="stats-row">
+                  <div class="stat-card green-glow">
+                    <span class="stat-num" id="demask-stat-restored">0</span>
+                    <span class="stat-label">Restored Entities</span>
+                  </div>
+                  <div class="stat-card red-glow" id="demask-unresolved-card">
+                    <span class="stat-num" id="demask-stat-unresolved">0</span>
+                    <span class="stat-label">Unresolved Tokens</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="editor-pane flex-grow">
+                <div class="pane-header">
+                  <h3>Restored Payload</h3>
+                  <button class="btn btn-secondary btn-sm btn-copy hidden" id="btn-copy-restored" data-copy-target="demask-output">Copy Output</button>
+                </div>
+                <div class="pane-body">
+                  <textarea id="demask-output" class="code-textarea readonly" readonly placeholder="Original payload will be restored here..."></textarea>
+                </div>
+              </div>
+
+              <!-- Restored Entities Table Card -->
+              <div class="editor-pane hidden" id="demask-entities-card" style="max-height: 250px; display: flex; flex-direction: column;">
+                <div class="pane-header">
+                  <h3>Restored PII & PHI Entities</h3>
+                  <span class="badge" id="demask-entities-count-badge">0 items</span>
+                </div>
+                <div class="table-container" style="overflow-y: auto;">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Token</th>
+                        <th>Type</th>
+                        <th>Category</th>
+                        <th>Original Value</th>
+                      </tr>
+                    </thead>
+                    <tbody id="demask-entities-table-body">
+                      <!-- Dynamic entries -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- VIEW 4: VAULT REGISTRY -->
+        <section id="tab-registry" class="view-panel">
+          <div class="registry-container">
+            <div class="registry-search-bar">
+              <div class="input-field-group flex-grow">
+                <label for="registry-doc-id-input">Query Vault by Document ID</label>
+                <div class="search-input-row">
+                  <input type="text" id="registry-doc-id-input" placeholder="Enter document_id (e.g. 550e8400-e29b-41d4-a716-446655440000)" autocomplete="off">
+                  <button class="btn btn-primary" id="btn-registry-search">Query Vault</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Active Document Vault Information -->
+            <div class="registry-results hidden" id="registry-results-wrapper">
+              <div class="registry-summary-card">
+                <div class="summary-details">
+                  <h4>Document ID: <code id="registry-doc-id-display">N/A</code></h4>
+                  <p>Below are the registered token scopes. The vault holds these mappings in highly encrypted form. Decryption requires cryptographic key lookup.</p>
+                </div>
+                <div class="summary-actions">
+                  <button class="btn btn-danger" id="btn-trigger-purge">Purge Document Keys</button>
+                </div>
+              </div>
+
+              <div class="table-container">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Token</th>
+                      <th>Entity Type</th>
+                      <th>Category</th>
+                      <th>Key Path</th>
+                    </tr>
+                  </thead>
+                  <tbody id="registry-table-body">
+                    <!-- Dynamic entries -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Empty State for Search -->
+            <div class="empty-state" id="registry-empty-state">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <h4>No document loaded</h4>
+              <p>Type a document_id above and click Query to retrieve structural mapping metadata from the database.</p>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- VIEW 5: AUDIT LOGS -->
+        <section id="tab-audit" class="view-panel">
+          <div class="audit-container">
+            <div class="audit-header-row">
+              <h3>Live Operations Audit Trail</h3>
+              <button class="btn btn-secondary btn-sm" id="btn-refresh-audit">Refresh Log</button>
+            </div>
+            
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp (UTC)</th>
+                    <th>Action</th>
+                    <th>Document ID</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody id="audit-table-body">
+                  <!-- Dynamic entries -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Purge Confirmation Modal -->
+  <div class="modal-overlay hidden" id="modal-purge">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Purge Vault Mapping?</h3>
+        <button class="btn-close-modal" id="btn-close-modal-x">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-warning-box">
+          <svg class="warning-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div>
+            <strong>CRITICAL: IRREVERSIBLE ACTION</strong>
+            <p>This will permanently delete the decryption mappings for document ID <code id="modal-purge-doc-id">N/A</code>. Once purged, any masked payloads associated with this document CAN NEVER be demasked back to plaintext.</p>
+          </div>
+        </div>
+        <p>To confirm, type <strong class="text-danger">PURGE</strong> in the input box below:</p>
+        <input type="text" id="modal-purge-confirm-input" class="form-control text-center" placeholder="Type PURGE..." autocomplete="off">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btn-cancel-purge">Cancel</button>
+        <button class="btn btn-danger disabled" id="btn-confirm-purge" disabled>Purge Vault Permanently</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Main JavaScript File -->
+  <script src="/static/app.js"></script>
+</body>
+</html>

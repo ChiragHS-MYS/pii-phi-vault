@@ -1,0 +1,25 @@
+{
+  "patient": {
+    "patient_name": "Asha Verma",
+    "dob": "1989-04-12",
+    "ssn": "123-45-6789",
+    "email": "asha.verma@example.com",
+    "phone": "9876543210",
+    "mrn": "MRN-0234891",
+    "address": "221B Brigade Road, Bengaluru, 560001"
+  },
+  "encounter": {
+    "diagnosis": "E11.9",
+    "notes": "Patient presents with elevated glucose, contact at asha.verma@example.com for follow-up.",
+    "prescription": "Metformin 500mg BID"
+  },
+  "insurance": {
+    "primary": {
+      "insurance_id": "INS123456789",
+      "policy_number": "POL98765432"
+    },
+    "secondary": {
+      "insurance_id": "SEC55667788"
+    }
+  }
+}

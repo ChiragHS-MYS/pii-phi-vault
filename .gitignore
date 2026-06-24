@@ -1,0 +1,7 @@
+storage/vault.db
+storage/vault.key
+audit/audit.log
+__pycache__/
+*.pyc
+.venv/
+venv/

@@ -1,0 +1,15 @@
+<Patient>
+  <Name>Rohan Mehta</Name>
+  <DOB>1991-07-22</DOB>
+  <SSN>987-65-4321</SSN>
+  <Email>rohan.mehta@example.com</Email>
+  <MRN>MRN-0098123</MRN>
+  <Encounter>
+    <Diagnosis icd_code="J45.909">Asthma, unspecified</Diagnosis>
+    <Notes>Reachable at rohan.mehta@example.com or 9123456780 if labs change.</Notes>
+    <Prescription>Albuterol inhaler PRN</Prescription>
+  </Encounter>
+  <Insurance insurance_id="INS998877665">
+    <PolicyNumber>POL11223344</PolicyNumber>
+  </Insurance>
+</Patient>

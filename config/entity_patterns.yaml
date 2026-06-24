@@ -1,0 +1,84 @@
+# Regex-based entity patterns.
+# category: PII | PHI
+# pattern: Python regex (applied with re.IGNORECASE where sensible)
+
+entities:
+  - type: EMAIL
+    category: PII
+    pattern: '[\w\.\-+]+@[\w\-]+\.[\w\.\-]+'
+
+  - type: SSN
+    category: PII
+    pattern: '\b\d{3}-\d{2}-\d{4}\b'
+
+  - type: PHONE
+    category: PII
+    pattern: '\b(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b'
+
+  - type: CREDIT_CARD
+    category: PII
+    pattern: '\b(?:\d[ -]*?){13,16}\b'
+
+  - type: DOB
+    category: PII
+    pattern: '\b\d{4}-\d{2}-\d{2}\b'
+
+  - type: ZIP_CODE
+    category: PII
+    pattern: '\b\d{5}(?:-\d{4})?\b'
+
+  - type: NAME_FIELD
+    category: PII
+    # NOT a regex over free text — matched only when the JSON/XML *key* itself
+    # is one of these (see rules_engine.KEY_HINTS). Listed here for reference.
+    pattern: null
+
+  - type: MRN
+    category: PHI
+    # Medical Record Number, e.g. MRN-0234891 or just an 7-10 digit ID under an mrn key
+    pattern: '\b(MRN[-_]?\d{5,10}|\d{7,10})\b'
+
+  - type: INSURANCE_ID
+    category: PHI
+    pattern: '\b[A-Z]{2,4}\d{6,12}\b'
+
+  - type: ICD_CODE
+    category: PHI
+    pattern: '\b[A-TV-Z][0-9][0-9AB](?:\.[0-9A-TV-Z]{1,4})?\b'
+
+  - type: NPI
+    category: PHI
+    pattern: '\b\d{10}\b'
+
+  - type: AADHAAR
+    category: PII
+    pattern: '\b\d{4}[-\s]?\d{4}[-\s]?\d{4}\b'
+
+
+# Keys (case-insensitive, JSON object keys or XML tag/attribute names) that,
+# when encountered, force the *entire* field value to be treated as the
+# given entity type/category even if it doesn't match a regex (e.g. plain names).
+key_hints:
+  name: { type: NAME, category: PII }
+  first_name: { type: NAME, category: PII }
+  last_name: { type: NAME, category: PII }
+  full_name: { type: NAME, category: PII }
+  patient_name: { type: NAME, category: PHI }
+  address: { type: ADDRESS, category: PII }
+  ssn: { type: SSN, category: PII }
+  email: { type: EMAIL, category: PII }
+  phone: { type: PHONE, category: PII }
+  dob: { type: DOB, category: PII }
+  date_of_birth: { type: DOB, category: PII }
+  mrn: { type: MRN, category: PHI }
+  medical_record_number: { type: MRN, category: PHI }
+  diagnosis: { type: DIAGNOSIS, category: PHI }
+  icd_code: { type: ICD_CODE, category: PHI }
+  insurance_id: { type: INSURANCE_ID, category: PHI }
+  policy_number: { type: INSURANCE_ID, category: PHI }
+  prescription: { type: PRESCRIPTION, category: PHI }
+  medication: { type: PRESCRIPTION, category: PHI }
+  aadhaar: { type: AADHAAR, category: PII }
+  aadhar: { type: AADHAAR, category: PII }
+  aadhaar_number: { type: AADHAAR, category: PII }
+  aadhar_number: { type: AADHAAR, category: PII }
